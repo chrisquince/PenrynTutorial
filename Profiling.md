@@ -17,7 +17,7 @@ cd Projects
 ```
 
 Create a new directory for our analysis with `mkdir`:
-````
+```
 mkdir InfantGut
 ```
 
