@@ -6,10 +6,36 @@
 Login to server:
 
 ```
-ssh -X ubuntu@137.205.69.49
+ssh -X ubuntu@xxx.xxx.xxx.xxx
 ```
 
-We will start by profiling the AD reads with Kraken. We will use forward reads only:
+We will start by creating a new sub-directory in Projects:
+
+Move into Projects with the `cd` change directory command:
+```
+cd Projects
+```
+
+Create a new directory for our analysis with `mkdir`:
+````
+mkdir InfantGut
+```
+
+Now move into the directory InfantGut (command not supplied) ...
+
+We are going to process a subset of the classic Sharon et al. (2011) Infant Gut data set:
+```
+ls ~/Data/InfantGut/ReadsSub
+```
+
+How many reads are in each sample and how many samples are there?
+
+Lets link `ln` in the Data directory:
+```
+ln -s ~/Data/InfantGut/ReadsSub .
+```
+
+Now we will profile the Infant Gut reads with Kraken. We will use forward reads only:
 
 ```
 mkdir Kraken
@@ -18,44 +44,71 @@ do
     base=${file##*/}
     stub=${base%_R1.fastq}
     echo $stub
-    kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output Kraken/${stub}.kraken $file
+    kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output Kraken/${stub}_R1.kraken $file
 done
 ```
 
+Try to understand the anatomy of the above commands.
+
 We match against the 'minikraken' database which corresponds to RefSeq 2014.
+
 Would we expect the profile to differ between R1 and R2?
 
-Look at percentage of reads classified. Anaerobic digesters are under studied communities!
+Can you edit the above to run the R2 reads?
 
-Discussion point what can we do about under representation in Database?
+mkdir Kraken
+for file in ReadsSub/*R2*fastq
+do
+    base=${file##*/}
+    stub=${base%_R2.fastq}
+    echo $stub
+    kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output Kraken/${stub}_R2.kraken $file
+done
+
+Look at percentage of reads classified. Infant guts are well studied communities.
+
 
 The output is just a text file:
 
 ```
-head Kraken/S102_Sub.kraken
+head Kraken/sample1_R1.kraken
 ```
 
 And we can generate a report:
 
 ```
-kraken-report --db ~/Databases/minikraken_20141208/  Kraken/S102_Sub.kraken >  Kraken/S102_Sub.kraken.report
-```
-
-Some people prefer a different format:
-```
-kraken-mpa-report --db ~/Databases/minikraken_20141208/ Kraken/S102_Sub.kraken > Kraken/S102_Sub.kraken.mpa.report
+kraken-report --db ~/Databases/minikraken_20141208/  Kraken/sample1_R1.kraken >  Kraken/sample1_R1.kraken.report
 ```
 
 We can get a report of the predicted genera:
 ```
-cat  Kraken/S102_Sub.kraken.report | awk '$4=="G"'
+cat  Kraken/sample1_R1.kraken.report | awk '$4=="G"'
 ```
+
+Some people prefer a different format:
+```
+kraken-mpa-report --db ~/Databases/minikraken_20141208/ Kraken/sample1_R1.kraken  > Kraken/sample1_R1.kraken.mpa.report
+```
+
+Compare with reverse reads what is the major difference?
+
+Will combine the two for analysis below.
+
+```
+for file in Kraken/*R1.kraken
+do
+    stub=${file%_R1.kraken}
+    rfile=${stub}_R2.kraken
+    cat $file $rfile > ${stub}_R12.kraken
+done
+```
+
 
 What is awk?
 
-Now lets get reports on all samples:
+Now lets get reports on all combined samples:
 ```
-for file in Kraken/*.kraken
+for file in Kraken/*_R12.kraken
 do
     stub=${file%.kraken}
     echo $stub
@@ -66,9 +119,9 @@ done
 Having done this we want to get one table of annotations at the genera level for community comparisons:
 
 ```
-for file in Kraken/*.kraken.report
+for file in Kraken/*_R12.kraken.report
 do
-    stub=${file%.kraken.report}
+    stub=${file%_R12.kraken.report}
     cat  $file | awk '$4=="G"' > $stub.genera
 done
 ```
