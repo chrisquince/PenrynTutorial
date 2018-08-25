@@ -56,15 +56,6 @@ Would we expect the profile to differ between R1 and R2?
 
 Can you edit the above to run the R2 reads?
 
-mkdir Kraken
-for file in ReadsSub/*R2*fastq
-do
-    base=${file##*/}
-    stub=${base%_R2.fastq}
-    echo $stub
-    kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output Kraken/${stub}_R2.kraken $file
-done
-
 Look at percentage of reads classified. Infant guts are well studied communities.
 
 
@@ -139,8 +130,8 @@ There is a clear shift in genera level structure over time but no association wi
 We can generate this plot either locally or on the server by:
 
 ```
-cp ~/Data/AD/Meta.csv .
-Rscript ~/repos/WorkshopSept2017/RAnalysis/GeneraKNMDS.R 
+cp ~/Data/InfantGut/Meta.csv .
+Rscript ~/bin/GeneraKNMDS.R 
 ```
 
 Discussion points:
@@ -149,89 +140,28 @@ Discussion points:
 
 <a name="functionalprofiling"/>
 
-## How to build a Kraken database
 
-Mick Watson has written some Perl scripts that will download and build 
-kraken databases for bacteria, archaea, fungi, protozoans and viruses at various stages of completion.
+## Running Metaphlan2 on the Infant Gut
 
-[Kraken DB install scripts](https://github.com/mw55309/Kraken_db_install_scripts)
-
-Note: these will take a while so be careful.
-
-To build a custom database, first we need the NCBI taxonomy:
 
 ```
-DB_NAME="kraken_db"
-kraken-build --download-taxonomy --db $DB_NAME
+python ~/Installation/metaphlan2/metaphlan2.py ReadsSub/sample1_R1.fastq,ReadsSub/sample1_R2.fastq --bowtie2out metagenome.bowtie2.bz2 --nproc 8 --input_type fastq
 ```
 
-Then let’s imagine we have a directory full of FNA files 
-(the download_*.pl scripts by Mick will create well formatted .fna files; 
-otherwise you can download directly from the NCBI)
 
-```
-for f in `ls mydir/*.fna`; do
-  kraken-build --add-to-library $f --db $DB_NAME
-done
-```
-
-Then finally
-
-```
-kraken-build --build --db $DB_NAME
-```
-
-This will create a large kmer index file in a directory with the same name as your kraken database. 
-Roughly speaking, the size of this file represents the amount of RAM you will need to run Kraken
-
-## Running Metaphlan2 on the human gut
-
-```
-cd ~/Projects
-mkdir ~/Projects/Gut
-ln -s ~/Data/Gut/Reads Reads
-```
-
-There are too many reads to work with here so first thing we will do is subsample them to 100,000
-
-```
-mkdir ReadsSub
-for file in Reads/*fasta
-do
-    base=${file##*/}
-    stub=${base%.fasta}
-    echo $stub
-    seqtk sample -s100 $file 100000 > ReadsSub/${stub}_Sub.fasta
-done
-```
-
-Much easier to work with
-```
-grep -c ">" ReadsSub/*fasta
-```
-
-And we will cat these together for convenience:
-```
-for file in ReadsSub/*_R1_Sub.fasta
-do
-    base=${file##*/}
-    stub=${base%_R1_Sub.fasta}
-    cat $file ReadsSub/${stub}_R2_Sub.fasta > ReadsSub/${stub}_R12.fasta
-done
-```
 
 Note these files are not true interleaved fasta.
 
 ```
 mkdir MetaphlanResults
-for file in ReadsSub/*_R12.fasta
+for file in ReadsSub/*_R1.fastq
 do
     base=${file##*/}
-    stub=${base%_R12.fasta}
-
+    stub=${base%_R1.fastq}
+    rfile=ReadsSub/${stub}_R2.fastq
     echo $stub
     
-    python ~/Installation/metaphlan2/metaphlan2.py $file --input_type fasta --nproc 8 > MetaphlanResults/${stub}_pm.txt
+    python ~/Installation/metaphlan2/metaphlan2.py $file,$rfile --bowtie2out MetaphlanResults/${stub}.bowtie2.bz2 --input_type fastq --nproc 8 > MetaphlanResults/${stub}_pm.txt
 done
 ```
 
@@ -239,29 +169,13 @@ done
 
 Then when we are done we merge these tables:
 ```
+python ~/Installation/metaphlan2/utils/merge_metaphlan_tables.py MetaphlanResults/*_pm.txt > MetaphlanResults/merged_abundance_table.txt
 python ~/Installation/metaphlan2/merge_metaphlan_tables.py MetaphlanResults/*_pm.txt > MetaphlanMerged/merged_abundance_table.txt
 ```
 
 and generate a heatmap:
 ```
-python ~/Installation/metaphlan2/utils/metaphlan_hclust_heatmap.py -c bbcry --top 25 --minv 0.1 -s log --in MetaphlanMerged/merged_abundance_table.txt --out MetaphlanMerged/abundance_heatmap.png
-```
-
-![Metaphlan gut heatmap](https://github.com/chrisquince/CopenhagenWorkshop/blob/master/Figures/abundance_heatmap.png)
-
-<a name="functionalprofiling"/>
-
-## Centrifuge profiling of Ragna reads
-
-Run centrifuge against Prokaryotes as follows:
-
-```
-centrifuge -x ~/Databases/Centrifuge/p_compressed -U sk152_dentine_nothuman.fq -q --threads 8 > sk152_dentine_nothuman_cent.tsv
-```
-
-Over 50% of the reads are classified to Salmonella enterica:
-```
-Salmonella enterica	28901	species	6689149	58538	50642	0.557764
+python ~/Installation/metaphlan2/utils/metaphlan_hclust_heatmap.py -c bbcry --top 25 --minv 0.1 -s log --in MetaphlanResults/merged_abundance_table.txt --out MetaphlanResults/abundance_heatmap.png
 ```
 
 
