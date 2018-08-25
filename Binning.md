@@ -42,11 +42,7 @@ This will involve a collection of different software programs:
 
 Start off by creating a new working directory and linking in the infant gut samples:
 ```
-mkdir Projects
-cd Projects
-mkdir InfantGut
-cd InfantGut/
-ln -s ~/Data/InfantGut/ReadsSub .
+cd ~/Projects/InfantGut/
 ```
 
 First let's try assembling a single sample with default parameters:
@@ -61,7 +57,7 @@ contig-stats.pl < Assembly1/final.contigs.fa
 
 Compare to a spades assembly without noise removal:
 ```
-spades.py --only-assembler --meta -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o AsemblyS -t 12 -k 23,55,77
+spades.py --only-assembler --meta -1 ReadsSub/sample1_R1.fastq -2 ReadsSub/sample1_R2.fastq -o AssemblyS -t 12 -k 23,55,77
 ```
 
 Which is better?
@@ -103,7 +99,7 @@ Discussion point what is N50?
 
 ## Read mapping
 
-Then cut up contigs and place in new dir:
+Then cut up contigs:
 
 ```bash
 python $CONCOCT/scripts/cut_up_fasta.py -c 10000 -o 0 -m Assembly/final.contigs.fa > Assembly/final_contigs_c10K.fa
@@ -202,7 +198,7 @@ Assign COGs change the -c flag which sets number of parallel processes appropria
     $CONCOCT/scripts/RPSBLAST.sh -f final_contigs_gt1000_c10K.faa -p -c 12 -r 1
 ```
 
-We are also going to refine the output using single-core gene frequencies. First we calculate scg frequencies on the CONCOCT clusters:
+Now we calculate scg frequencies on the CONCOCT clusters:
 ```
 cd ../Concoct
 python $CONCOCT/scripts/COG_table.py -b ../Annotate/final_contigs_gt1000_c10K.out  -m $CONCOCT/scgs/scg_cogs_min0.97_max1.03_unique_genera.txt -c clustering_gt1000.csv  --cdd_cog_file $CONCOCT/scgs/cdd_to_cog.tsv > clustering_gt1000_scg.tsv
