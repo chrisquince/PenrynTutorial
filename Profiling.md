@@ -121,10 +121,9 @@ And then run associated script:
 ```
 CollateK.pl Kraken > GeneraKraken.csv
 ```
-There is a clear shift in genera level structure over time but no association with replicate.
+There is a clear shift in genera level structure over time.
 
-![Kraken Genera NMDS](Figures/GeneraKNMDS.png)
-
+![Kraken Genera NMDS](./Figures/GeneraKNMDS.png)
 
 
 We can generate this plot either locally or on the server by:
@@ -173,13 +172,18 @@ python ~/Installation/metaphlan2/utils/merge_metaphlan_tables.py MetaphlanResult
 python ~/Installation/metaphlan2/merge_metaphlan_tables.py MetaphlanResults/*_pm.txt > MetaphlanMerged/merged_abundance_table.txt
 ```
 
-and generate a heatmap:
+and select species:
 ```
-python ~/Installation/metaphlan2/utils/metaphlan_hclust_heatmap.py -c bbcry --top 25 --minv 0.1 -s log --in MetaphlanResults/merged_abundance_table.txt --out MetaphlanResults/abundance_heatmap.png
+SelectSpecies.pl < MetaphlanResults/merged_abundance_table.txt > MetaphlanResults/Species.tsv
 ```
 
+#and generate a heatmap:
+#```
+#python ~/Installation/metaphlan2/utils/metaphlan_hclust_heatmap.py -c bbcry --top 25 --minv 0.1 -s log --in MetaphlanResults/merged_abundance_table.txt --out MetaphlanResults/abundance_heatmap.png
+#```
 
-## Functional gene profiling of AD reads
+
+## Functional gene profiling of Infant Gut reads
 
 To perform functional gene profiling we will use Diamond to map against the KEGG database. 
 First we will set an environmental variable to point to our copy of the Kegg:
@@ -187,7 +191,7 @@ First we will set an environmental variable to point to our copy of the Kegg:
 export KEGG_DB=~/Databases/keggs_database/KeggUpdate/
 ```
 ```
-cd ~/Projects/AD
+cd ~/Projects/InfantGut
 mkdir KeggD
 for file in ReadsSub/*R1.fastq
 do 
