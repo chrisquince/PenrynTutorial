@@ -260,10 +260,10 @@ Return to the analysis directory and create a new directory to bin the contigs i
 ```
 mkdir Split
 cd Split
-$DESMAN/scripts/SplitClusters.pl ../Annotate/final_contigs_gt1000_c10K.fa ../Concoct/clustering_refine.csv
-SplitCOGs.pl ../Annotate/final_contigs_gt1000_c10K.cogs ../Concoct/clustering_refine.csv
-SplitGenes.pl ../Annotate/final_contigs_gt1000_c10K.genes ../Concoct/clustering_refine.csv
-SplitFaa.pl ../Annotate/final_contigs_gt1000_c10K.faa ../Concoct/clustering_refine.csv
+$DESMAN/scripts/SplitClusters.pl ../Annotate/final_contigs_gt1000_c10K.fa ../Concoct/clustering_gt1000.csv
+SplitCOGs.pl ../Annotate/final_contigs_gt1000_c10K.cogs ../Concoct/clustering_gt1000.csv
+SplitGenes.pl ../Annotate/final_contigs_gt1000_c10K.genes ../Concoct/clustering_gt1000.csv
+SplitFaa.pl ../Annotate/final_contigs_gt1000_c10K.faa ../Concoct/clustering_gt1000.csv
 
 ```
 
@@ -275,16 +275,16 @@ python ~/bin/CompleteClusters.py ../Concoct/clustering_gt1000_scg.tsv > Cluster7
 ```
     while read line
     do 
-    file=${line}/${line}.faa
-    stub=${file%.faa}
-    base=${stub##*/}
-    echo $base
+        file=${line}/${line}.faa
+        stub=${file%.faa}
+        base=${stub##*/}
+        echo $base
 
-    diamond blastp -d $KEGG_DB/genes/fasta/genes.dmnd -q $file -o ${stub}.m8 > $file.d.out&
+        diamond blastp -d $KEGG_DB/genes/fasta/genes.dmnd -q $file -o ${stub}.m8 > $file.d.out&
     done < Cluster75.txt
 ```
 
-Run this instead:
+Probably too slow so run this instead:
 
 ```
 while read line
@@ -332,7 +332,7 @@ We then can create a table of Kegg orthologs across all clusters.
 ~/repos/MAGAnalysis/scripts/CollateHits.pl > CollateHits75.csv
 ```
 
-##Taxonomic Classification of Contigs
+## Taxonomic Classification of Contigs
 
 ```
 cd ~/Projects/InfantGut/
