@@ -356,9 +356,9 @@ paste Ids.txt SpeciesAss.txt | grep "s__" | tr "\t" "," > Contig_Species.csv
 
 These can then be used for a cluster confusion plot:
 ```
-$CONCOCT/scripts/Validate.pl --cfile=../Concoct/clustering_refine.csv --sfile=Contig_pecies.csv --ffile=../Assembly/final_contigs_c10K.fa --ofile=Taxa_Conf.csv
+$CONCOCT/scripts/Validate.pl --cfile=../Concoct/clustering_gt1000.csv --sfile=Contig_Species.csv --ffile=../Assembly/final_contigs_c10K.fa --ofile=Taxa_Conf.csv
 ```
-Now the results will be somewhat different...
+Now your results may be somewhat different...
 ```
 N	M	TL	S	K	Rec.	Prec.	NMI	Rand	AdjRand
 2356	1720	1.0855e+07	46	22	0.958779	0.939837	0.883243	0.979203	0.939598
