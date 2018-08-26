@@ -335,9 +335,8 @@ We then can create a table of Kegg orthologs across all clusters.
 ## Taxonomic Classification of Contigs
 
 ```
-cd ~/Projects/InfantGut/
+cd ~/Projects/InfantGut/Annotate
 kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output final_contigs_gt1000_c10K.krak final_contigs_gt1000_c10K.fa
-Loading database... complete.
 ```
 
 ```
