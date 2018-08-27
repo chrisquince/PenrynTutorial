@@ -24,11 +24,12 @@ python ~/bin/Lengths.py -i final_contigs_gt1000_c10K.fa > final_contigs_gt1000_c
 cd ..
 ```
 
-We will run DESMAN on three complete clusters with more than 50fold coverage. Find these with the following simple script:
+We will run DESMAN on two complete clusters with more than 50fold coverage. Find these with the following simple script:
 ```
 python3 ~/bin/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv > Split/Comp50.txt
 ```
 
+What species are these clusters likely from?
 
 The split mapping files:
 ```
@@ -51,11 +52,6 @@ do
         
 done < Split/Comp50.txt 
 ```
-
-while read -r cluster 
-do
-    echo $cluster   
-done < Split/Comp50.txt 
 
 
 and use a third party program bam-readcount to get base frequencies at each position on each contig:
@@ -102,12 +98,12 @@ do
     echo $cluster
     (cd ./SplitBam/${cluster}/ReadcountFilter; gzip *cnt; cd ../../..; python $DESMAN/scripts/ExtractCountFreqGenes.py Split/${cluster}/${cluster}_core.cogs ./SplitBam/${cluster}/ReadcountFilter --output_file Variants/${cluster}_scg.freq > Variants/${cluster}log.txt)&
 
-done < Split/ClusterR.txt 
+done < Split/Comp50.txt
 ``` 
 
-The directory contains 7 .freq files one for each cluster. If we look at one:
+The directory contains 2 .freq files one for each cluster. If we look at one:
 ```bash
-head -n 10 Variants/Cluster13_scg.freq 
+head -n 10 Variants/Cluster7_scg.freq 
 ```
 We see it comprises a header, plus one line for each core gene position, giving base frequencies in the order A,C,G,T. This is the input required by DESMAN.
 
@@ -135,7 +131,7 @@ do
     cp $file SCG_Analysis/$stub
     cd SCG_Analysis/$stub    
 
-    Variant_Filter.py ${stub}.freq -o $stub -m 1.0 -f 25.0 -c -sf 0.80 -t 2.5 
+    Variant_Filter.py ${stub}.freq -o $stub -p
     
     cd ../..
 done
@@ -149,15 +145,15 @@ cd SCG_Analysis
 wc */*sel_var.csv
 ```
 
-We can also go into the Cluster 14 directory and look at the output files:
+We can also go into the Cluster 7 directory and look at the output files:
 ```bash
-cd Cluster14_scg
-more Cluster14_scgsel_var.csv 
+cd Cluster7_scg
+more Cluster7_scgsel_var.csv 
 ```
 
 The other important file is:
 ```bash
-more Cluster14_scgtran_df.csv
+more Cluster7_scgtran_df.csv
 ```
 
 This is an estimate of base error rates which is used as a starting point for the haplotype inference.
@@ -165,14 +161,15 @@ This is an estimate of base error rates which is used as a starting point for th
 
 ### Inferring haplotypes
 
-So accounting for the header line we observe 18 and 0 variants in Clusters 14 and 13 respectively. For only Cluster 14 then can we attempt to actually resolve haplotypes. Using the desman executable:
+So accounting for the header line we observe 214 and 9 variants in Clusters 7 and 20 respectively. 
+For Cluster 7 then can we attempt to resolve haplotypes. Using the desman executable:
 
 ```
-cd Cluster19_scg
+cd Cluster7_scg
 
-varFile='Cluster19_scgsel_var.csv'
+varFile='Cluster7_scgsel_var.csv'
 
-eFile='Cluster19_scgtran_df.csv'
+eFile='Cluster7_scgtran_df.csv'
     
 for g in 1 2 3 4  
 do
@@ -180,32 +177,13 @@ do
     for r in 0 1 2 3 4
     do
 	    echo $r
-        (desman $varFile -e $eFile -o Cluster19_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
+        (desman $varFile -e $eFile -o Cluster7_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
     done
     wait
 done
 ```
 
-```
-cd ..
-cd Cluster3_scg
-
-varFile='Cluster3_scgsel_var.csv'
-
-eFile='Cluster3_scgtran_df.csv'
-    
-for g in 1 2 3 4  
-do
-    echo $g
-    for r in 0 1 2 3 4
-    do
-	    echo $r
-        (desman $varFile -e $eFile -o Cluster13_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
-    done
-    wait
-done
-```
-
+Now lets look at the posterior deviance:
 ```
 cat */fit.txt | cut -d"," -f2- > Dev.csv
 sed -i '1iH,G,LP,Dev' Dev.csv 
@@ -216,7 +194,7 @@ Which we can then visualise:
 $DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
 ```
 
-![Posterior deviance](../Figures/Dev.pdf)
+![Posterior deviance](../Figures/Dev.png)
 
 There are clearly two haplotypes. We can also run the heuristic to determine haplotype number:
 
@@ -274,6 +252,28 @@ Intersection: 15
  [ 1.  0.]]
 ```
 Each predicted haplotype should match onto a reference strain with no errors.
+
+Then for Cluster20
+```
+cd ..
+cd Cluster20_scg
+
+varFile='Cluster20_scgsel_var.csv'
+
+eFile='Cluster20_scgtran_df.csv'
+    
+for g in 1 2 3 4  
+do
+    echo $g
+    for r in 0 1 2 3 4
+    do
+	    echo $r
+        (desman $varFile -e $eFile -o Cluster20_${g}_${r} -g $g -s $r -m 1.0 -i 100)& 
+    done
+    wait
+done
+```
+
 
 ### Accessory Gene assignment
 
