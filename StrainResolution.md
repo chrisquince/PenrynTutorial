@@ -196,15 +196,15 @@ $DESMAN/scripts/PlotDev.R -l Dev.csv -o Dev.pdf
 
 ![Posterior deviance](./Figures/Dev.png)
 
-There are clearly two haplotypes. We can also run the heuristic to determine haplotype number:
+There are two or possibly three haplotypes. We can also run the heuristic to determine haplotype number:
 
 ```bash
-python $DESMAN/scripts/resolvenhap.py Cluster14
+python $DESMAN/scripts/resolvenhap.py Cluster7
 ```
 
 This should output:
 ```
-2,2,2,0.0,Cluster14_2_2/Filtered_Tau_star.csv
+3,3,3,0.0288161993769,Cluster7_3_3/Filtered_Tau_star.csv
 ```
 
 This has the format:
@@ -214,44 +214,44 @@ No of haplotypes in best fit, No. of good haplotypes in best fit, Index of best 
 
 Have a look at the prediction file:
 ```
-more Cluster14_2_2/Filtered_Tau_star.csv
+more Cluster7_3_3/Filtered_Tau_star.csv
 ```
 
 The position encoding is ACGT so what are the base predictions at each variant position? 
 We can turn these into actual sequences with the following commands:
 
 ```bash
-    cut -d"," -f 1 < Cluster14_scgcogf.csv | sort | uniq | sed '1d' > coregenes.txt
 
-    mkdir SCG_Fasta_2_2
+    cut -d"," -f 1 < Cluster7_scgsel_var.csv | sort | uniq | sed '1d' > coregenes.txt
+
+    mkdir SCG_Fasta_3_3
     
-    python $DESMAN/scripts/GetVariantsCore.py ../../Annotate/final_contigs_gt1000_c10K.fa ../..//Split/Cluster14/Cluster14_core.cogs Cluster14_2_2/Filtered_Tau_star.csv coregenes.txt -o SCG_Fasta_2_2/
+    python $DESMAN/scripts/GetVariantsCore.py ../../Annotate/final_contigs_gt1000_c10K.fa ../..//Split/Cluster7/Cluster7_core.cogs Cluster7_3_3/Filtered_Tau_star.csv coregenes.txt -o SCG_Fasta_3_3/
 ```
 
 This generates one fasta sequence file for each gene with the two strains in:
 
 ```bash
-ls SCG_Fasta_2_2
+ls SCG_Fasta_3_3
 ```
 
-In this case we know Cluster14 maps onto species 2095, which reassuringly has two strains present. I have pre-calculated the true variants between these two strains.
 
 ```bash
-wget https://septworkshop.s3.climb.ac.uk/Cluster14_core_tau.csv
-
-python $DESMAN/scripts/validateSNP2.py Cluster14_2_2/Filtered_Tau_star.csv Cluster14_core_tau.csv
+python $DESMAN/scripts/validateSNP2.py Cluster7_3_3/Filtered_Tau_star.csv Cluster7_3_3/Filtered_Tau_star.csv
 ``` 
 
 
 This gives distance matrices between the true variants and the predictions in terms of SNV and fractions:
 ```bash
-Intersection: 15
-[[ 0 15]
- [15  0]]
-[[ 0.  1.]
- [ 1.  0.]]
+Intersection: 214
+[[  0  89 157]
+ [ 89   0 183]
+ [157 183   0]]
+[[ 0.          0.41588785  0.73364486]
+ [ 0.41588785  0.          0.85514019]
+ [ 0.73364486  0.85514019  0.        ]]
 ```
-Each predicted haplotype should match onto a reference strain with no errors.
+
 
 Then for Cluster20
 ```
@@ -273,6 +273,8 @@ do
     wait
 done
 ```
+
+Are any subpopulations found?
 
 
 ### Accessory Gene assignment
