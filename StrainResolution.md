@@ -6,6 +6,8 @@
 
 Then we select the SCGS for each cluster:
 ```bash
+cd ~/Projects/InfantGut
+
 cp ~/repos/MAGAnalysis/cogs.txt scgs.txt 
 while read -r cluster 
 do
@@ -22,6 +24,13 @@ python ~/bin/Lengths.py -i final_contigs_gt1000_c10K.fa > final_contigs_gt1000_c
 cd ..
 ```
 
+We will run DESMAN on three complete clusters with more than 50fold coverage. Find these with the following simple script:
+```
+python3 ~/bin/CompleteClustersCov.py Concoct/clustering_gt1000_scg.tsv Concoct/clustering_gt1000_covR.csv > Split/Comp50.txt
+```
+
+
+The split mapping files:
 ```
 mkdir SplitBam
 
@@ -30,25 +39,28 @@ do
     grep ">" Split/${cluster}/${cluster}.fa | sed 's/>//g' > Split/${cluster}/${cluster}_contigs.txt
     AddLengths.pl Annotate/final_contigs_gt1000_c10K.len < Split/${cluster}/${cluster}_contigs.txt > Split/${cluster}/${cluster}_contigs.tsv
     mkdir SplitBam/${cluster}
-    echo $line
+    echo $cluster
     for bamfile in Map/*.mapped.sorted.bam
     do
         stub=${bamfile#Map\/}
         stub=${stub%.mapped.sorted.bam}
-        
-        samtools view -bhL Split/${cluster}/${cluster}_contigs.tsv $bamfile > SplitBam/${cluster}/${stub}_Filter.bam
+        echo $stub
+        samtools view -bhL Split/${cluster}/${cluster}_contigs.tsv $bamfile > SplitBam/${cluster}/${stub}_Filter.bam&
 
     done 
-    wait    
-done < Split/ClusterR.txt 
+        
+done < Split/Comp50.txt 
 ```
+
+while read -r cluster 
+do
+    echo $cluster   
+done < Split/Comp50.txt 
 
 
 and use a third party program bam-readcount to get base frequencies at each position on each contig:
 
 ```
-
-
 while read line
 do
     mag=$line
@@ -74,8 +86,8 @@ do
      done
      cd ..
      cd ..
-     wait
-done < Split/ClusterR.txt
+     
+done < Split/Comp50.txt
 
 ``` 
 
