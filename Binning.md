@@ -406,6 +406,8 @@ done < cogs.txt
 Then trim alignments:
 
 ```
+rm AlignAll/_all.*
+
 for file in  AlignAll/*gffn
 do
     echo $stub
@@ -440,6 +442,6 @@ fasttreeMP -nt -gtr < AlignAllR.gfa 2> SelectR.out > AlignAllR.tree
 
 Visualise this locally with FigTree or on the web with ITOL
 
-![Methanogen tree](../Figures/MethanoTree.png)
+![Methanogen tree](../Figures/InfantGutTree.png)
 
 
