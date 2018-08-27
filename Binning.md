@@ -442,6 +442,6 @@ fasttreeMP -nt -gtr < AlignAllR.gfa 2> SelectR.out > AlignAllR.tree
 
 Visualise this locally with FigTree or on the web with ITOL
 
-![Methanogen tree](../Figures/InfantGutTree.png)
+![Methanogen tree](./Figures/Tree.png)
 
 
