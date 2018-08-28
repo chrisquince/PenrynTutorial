@@ -7,6 +7,39 @@ Login to server:
 
 ```
 ssh -X ubuntu@xxx.xxx.xxx.xxx
+
+Penryn1: 137.205.69.65
+
+Penryn2: 137.205.69.56
+
+Penryn3: 137.205.69.23
+
+Penryn4: 137.205.69.15
+
+Penryn5: 137.205.69.24
+
+Penryn6: 137.205.69.90
+
+Penryn7: 137.205.69.99
+
+Penryn8: 137.205.69.34
+
+Penryn9: 137.205.69.68
+
+Penryn10: 137.205.69.109
+
+Penryn11: 137.205.69.124
+
+Penryn12: 137.205.69.84
+
+Penryn13: 137.205.69.116
+
+Penryn14: 137.205.69.110
+
+Penryn15: 137.205.69.142
+
+Penryn16: 137.205.69.135
+
 ```
 
 We will start by creating a new sub-directory in Projects:
@@ -177,10 +210,6 @@ and select species:
 SelectSpecies.pl < MetaphlanResults/merged_abundance_table.txt > MetaphlanResults/Species.tsv
 ```
 
-#and generate a heatmap:
-#```
-#python ~/Installation/metaphlan2/utils/metaphlan_hclust_heatmap.py -c bbcry --top 25 --minv 0.1 -s log --in MetaphlanResults/merged_abundance_table.txt --out MetaphlanResults/abundance_heatmap.png
-#```
 
 
 ## Functional gene profiling of Infant Gut reads
@@ -262,5 +291,3 @@ cd ..
 
 We can view modules as multivariate data just like the genera relative frequencies. Is there a stronger or weaker relationship between time and module abundance than there was 
 for the genera abundances?
-
-![Modules](../Figures/Modules.png)
