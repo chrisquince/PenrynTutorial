@@ -143,8 +143,6 @@ done
 ```
 
 
-What is awk?
-
 Now lets get reports on all combined samples:
 ```
 for file in Kraken/*_R12.kraken
