@@ -54,12 +54,6 @@ Penryn22: 137.205.69.160
 
 Penryn24: 137.205.69.164
 
-Penryn25: 137.205.69.174
-
-Penryn26: 137.205.69.175
-
-Penryn27: 137.205.69.53
-
 ```
 
 We will start by creating a new sub-directory in Projects:
