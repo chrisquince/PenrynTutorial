@@ -54,6 +54,11 @@ Penryn22: 137.205.69.160
 
 Penryn24: 137.205.69.164
 
+Penryn25: 137.205.69.174
+
+Penryn26: 137.205.69.175
+
+Penryn27: 137.205.69.53
 
 ```
 
@@ -123,6 +128,8 @@ We can get a report of the predicted genera:
 ```
 cat  Kraken/sample1_R1.kraken.report | awk '$4=="G"'
 ```
+
+How would we get the species classifications, can you edit the above to do that?
 
 Some people prefer a different format:
 ```
