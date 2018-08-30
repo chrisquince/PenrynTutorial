@@ -252,6 +252,14 @@ Intersection: 214
  [ 0.73364486  0.85514019  0.        ]]
 ```
 
+Now look at time series of strain abundance:
+
+```
+cp ~/repos/PenrynTutorial/TimeStrain.R .
+Rscript TimeStrain.R -g Cluster7_3_3/Gamma_starR.csv -m ~/Data/InfantGut/sharon_mappingR.txt 
+```
+
+![Strain time series](./Figures/)
 
 Then for Cluster20
 ```
@@ -282,21 +290,16 @@ Are any subpopulations found?
 The next step would be to calculate the accessory gene presence and absences for these strains. 
 
 ```
-cd ~/Projects/Synthetic/
+cd ~/Projects/InfantGut/
 
 mkdir AllFreq
-
-cd AllFreq
-
-
-$DESMAN/scripts/ExtractCountFreqGenes.py Split/${cluster}/${cluster}_core.cogs ./SplitBam/${cluster}/ReadcountFilter --output_file Variants/${cluster}_scg.freq
 
 ```
 
 Then we get frequencies but now for all genes:
 
 ```
-python $DESMAN/scripts/ExtractCountFreqGenes.py -g ./Split/Cluster14/Cluster14.genes ./SplitBam/Cluster14/ReadcountFilter --output_file AllFreq/Cluster14.freq
+python3 $DESMAN/scripts/ExtractCountFreqGenes.py -g Split/Cluster7/Cluster7.genes ./SplitBam/Cluster7/ReadcountFilter --output_file AllFreq/Cluster7.freq
 
 ```
 
@@ -304,35 +307,37 @@ and find variants on those genes:
 
 ```
 cd AllFreq
-python $DESMAN/desman/Variant_Filter.py Cluster14.freq -o Cluster14 -m 1. -f 25.0 -p
+Variant_Filter.py Cluster7.freq -o Cluster7
 ```
+
+How many variants do we find on the accessory genome?
 
 We also need gene coverages these we compute from the frequencies:
 
 ```
-python $DESMAN/scripts/CalcGeneCov.py Cluster14.freq > Cluster14_gene_cov.csv
+python3 $DESMAN/scripts/CalcGeneCov.py Cluster7.freq > Cluster7_gene_cov.csv
 ```
 
 ```
-cut -d"," -f5 ../Split/Cluster14/Cluster14_core.cogs > Cluster14_core_genes.txt
+cut -d"," -f5 ../Split/Cluster7/Cluster7_core.cogs > Cluster7_core_genes.txt
 ```
 
 Calculate coverage on core genes:
 
 ```
-python $DESMAN/scripts/CalcDelta.py Cluster14_gene_cov.csv Cluster14_core_genes.txt Cluster14_core
+python3 $DESMAN/scripts/CalcDelta.py Cluster7_gene_cov.csv Cluster7_core_genes.txt Cluster7_core
 ```
 
 Now lets link the best run from DESMAN for convenience:
 
 ```
-ln -s ../SCG_Analysis/Cluster14_scg/Cluster14_2_2 .
+ln -s ../SCG_Analysis/Cluster7_scg/Cluster7_3_3 .
 ```
 
 and finally:
 
 ```
-python $DESMAN/desman/GeneAssign.py Cluster14_coremean_sd_df.csv Cluster14_2_2/Gamma_star.csv Cluster14_gene_cov.csv Cluster14_2_2/Eta_star.csv -m 20 -v Cluster14sel_var.csv -o Cluster14 --assign_tau
+python3 $DESMAN/desman/GeneAssign.py Cluster7_coremean_sd_df.csv Cluster7_3_3/Gamma_star.csv Cluster7_gene_cov.csv Cluster7_3_3/Eta_star.csv -m 20 -v Cluster7sel_var.csv -o Cluster7 --assign_tau
 ```
 
 ```

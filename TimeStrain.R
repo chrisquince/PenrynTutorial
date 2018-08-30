@@ -11,7 +11,7 @@ spec = matrix(c('gammafile','g',1,"character",'metafile','m',1,"character"),byro
 opt=getopt(spec)
 
 Gamma <- read.csv(opt$gammafile,header=TRUE,row.names=1)
-GammaK <- t(Gamma)
+GammaK <- Gamma
 GammaP <- GammaK/rowSums(GammaK)
 Meta <- read.table(opt$metafile,sep='\t',header=TRUE)
 
