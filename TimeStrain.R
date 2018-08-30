@@ -16,13 +16,15 @@ GammaP <- GammaK/rowSums(GammaK)
 Meta <- read.table(opt$metafile,sep='\t',header=TRUE)
 
 rownames(Meta) <- Meta$Sample
-colnames(GammaP) <- gsub("^","H",colnames(GammaP))
+#colnames(GammaP) <- gsub("^","H",colnames(GammaP))
 Meta <- Meta[rownames(GammaP),]
 
 GammaMeta <- cbind.data.frame(GammaP,Meta)
 
 GammaMelt <- melt(GammaMeta)
-colnames(GammaMelt) <- c("Day","Strain","Freq")
+#[1] "Day"      "Sample"   "variable" "value"   
+colnames(GammaMelt) <- c("Day","Sample","Strain","Freq")
+print(colnames(GammaMelt))
 p <- ggplot(data=GammaMelt,aes(x=Day,y=Freq,colour=Strain,group=Strain)) + geom_point()
 
 p <- p + geom_line() + theme_bw() + ylab("Relative frequency")
