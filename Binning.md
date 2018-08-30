@@ -206,7 +206,14 @@ python $CONCOCT/scripts/COG_table.py -b ../Annotate/final_contigs_gt1000_c10K.ou
 
 This should result in 5 clusters with 75% single copy copy SCGs:
 
+## Can also run CheckM on individual clusters
 
+CheckM is a very useful 3rd party program for cluster validation...
+
+```
+cd ~/Projects/InfantGut/Split
+checkm lineage_wf -t 8 -x fa Cluster7 Cluster7_cm
+```
 <a name="MAGs"/>
 
 ## Metagenome assembled genomes (MAGs)
@@ -238,6 +245,18 @@ How well does this correlate with time/replicates.
 
 ![ClusterCov](./Figures/ClusterNMDS.png) 
 
+
+Also plot some time series:
+
+```
+cd ~/repos
+git clone https://github.com/chrisquince/PenrynTutorial.git
+cd ~/Projects/InfantGut/Concoct
+cp ~/repos/PenrynTutorial/TimeSeries.R .
+cp ~/Data/InfantGut/sharon_mappingR.txt .
+```
+
+![TimeSeries](./TimeSeries.png) 
 
 ## Annotate MAGs
 
