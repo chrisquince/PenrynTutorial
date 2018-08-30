@@ -177,7 +177,7 @@ We can generate this plot either locally or on the server by:
 
 ```
 cp ~/Data/InfantGut/Meta.csv .
-Rscript ~/bin/GeneraKNMDS.R 
+Rscript ~/bin/GeneraFreqNMDS.R 
 ```
 
 Discussion points:
