@@ -286,71 +286,6 @@ SplitFaa.pl ../Annotate/final_contigs_gt1000_c10K.faa ../Concoct/clustering_gt10
 
 ```
 
-Kegg ortholog assignment on genes:
-```
-python ~/bin/CompleteClusters.py ../Concoct/clustering_gt1000_scg.tsv > Cluster75.txt
-```
-
-```
-    while read line
-    do 
-        file=${line}/${line}.faa
-        stub=${file%.faa}
-        base=${stub##*/}
-        echo $base
-
-        diamond blastp -d $KEGG_DB/genes/fasta/genes.dmnd -q $file -o ${stub}.m8 > $file.d.out&
-    done < Cluster75.txt
-```
-
-Probably too slow so run this instead:
-
-```
-while read line
-do 
-    echo $file
-  
-    file=${line}/${line}.m8
-  
-    cp ~/Projects_run/InfantGut/Split/$file $file
-  
-done < Cluster75.txt
-```
-
-
-Discussion point why blastp rather than blastx?
-
-The above maps onto Kegg genes these are then mapped to kegg orthologs by the Perl script:
-```
-more ~/bin/Assign_KO.pl
-```
-
-Run as follows:
-```
-COUNT=0
-for file in Cluster*/*m8
-do
-	dir=${file%.m8}
-	echo $file
-	echo $dir
-     Assign_KO.pl < $file > ${dir}.hits&
-    let COUNT=COUNT+1
-
-    if [ $COUNT -eq 8 ]; then
-        wait;
-        COUNT=0
-    fi
-done
-```
-
-Discussion point, trivial parallelisation using bash.
-
-
-We then can create a table of Kegg orthologs across all clusters.
-```
-~/repos/MAGAnalysis/scripts/CollateHits.pl > CollateHits75.csv
-```
-
 ## Taxonomic Classification of Contigs
 
 ```
@@ -461,6 +396,73 @@ fasttreeMP -nt -gtr < AlignAllR.gfa 2> SelectR.out > AlignAllR.tree
 
 Visualise this locally with FigTree or on the web with ITOL
 
-![Methanogen tree](./Figures/Tree.png)
+![Infant gut tree](./Figures/Tree.png)
+
+## Kegg orthologs
+
+Kegg ortholog assignment on genes:
+```
+python ~/bin/CompleteClusters.py ../Concoct/clustering_gt1000_scg.tsv > Cluster75.txt
+```
+
+```
+    while read line
+    do 
+        file=${line}/${line}.faa
+        stub=${file%.faa}
+        base=${stub##*/}
+        echo $base
+
+        diamond blastp -d $KEGG_DB/genes/fasta/genes.dmnd -q $file -o ${stub}.m8 > $file.d.out&
+    done < Cluster75.txt
+```
+
+Probably too slow so run this instead:
+
+```
+while read line
+do 
+    echo $file
+  
+    file=${line}/${line}.m8
+  
+    cp ~/Projects_run/InfantGut/Split/$file $file
+  
+done < Cluster75.txt
+```
+
+
+Discussion point why blastp rather than blastx?
+
+The above maps onto Kegg genes these are then mapped to kegg orthologs by the Perl script:
+```
+more ~/bin/Assign_KO.pl
+```
+
+Run as follows:
+```
+COUNT=0
+for file in Cluster*/*m8
+do
+	dir=${file%.m8}
+	echo $file
+	echo $dir
+     Assign_KO.pl < $file > ${dir}.hits&
+    let COUNT=COUNT+1
+
+    if [ $COUNT -eq 8 ]; then
+        wait;
+        COUNT=0
+    fi
+done
+```
+
+Discussion point, trivial parallelisation using bash.
+
+
+We then can create a table of Kegg orthologs across all clusters.
+```
+~/repos/MAGAnalysis/scripts/CollateHits.pl > CollateHits75.csv
+```
 
 
