@@ -256,7 +256,7 @@ cp ~/repos/PenrynTutorial/TimeSeries.R .
 cp ~/Data/InfantGut/sharon_mappingR.txt .
 ```
 
-![TimeSeries](./TimeSeries.png) 
+![TimeSeries](./Figures/TimeSeries.png) 
 
 ## Annotate MAGs
 
