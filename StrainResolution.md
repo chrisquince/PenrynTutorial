@@ -259,7 +259,7 @@ cp ~/repos/PenrynTutorial/TimeStrain.R .
 Rscript TimeStrain.R -g Cluster7_3_3/Gamma_starR.csv -m ~/Data/InfantGut/sharon_mappingR.txt 
 ```
 
-![Strain time series](./Figures/)
+![Strain time series](./Figures/StrainSeries.png)
 
 Then for Cluster20
 ```
