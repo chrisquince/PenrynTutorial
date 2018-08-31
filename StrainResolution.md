@@ -340,4 +340,7 @@ and finally:
 python3 $DESMAN/desman/GeneAssign.py Cluster7_coremean_sd_df.csv Cluster7_3_3/Gamma_star.csv Cluster7_gene_cov.csv Cluster7_3_3/Eta_star.csv -m 20 -v Cluster7sel_var.csv -o Cluster7 --assign_tau
 ```
 
+And look at gene and SNP divergence:
+```
+python ~/repos/PenrynTutorial/IdentEtaGamma.py Cluster7 Cluster7etaS_df.csv Cluster7_3_3/Selected_variants.csv Cluster7_3_3/Filtered_Tau_starR.csv Cluster7_3_3/Gamma_starR.csv
 ```
