@@ -1,7 +1,10 @@
 # Taxonomic and Functional Profiling
 
 
-## Taxonomic profiling
+
+## Getting started
+
+On Mac Os X start a terminal and use ssh command. For windows install an ssh client e.g. [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
 
 Login to server:
 
@@ -65,6 +68,9 @@ Lets link `ln` in the Data directory:
 ```
 ln -s ~/Data/InfantGut/ReadsSub .
 ```
+
+## Taxonomic profiling
+
 
 Now we will profile the Infant Gut reads with Kraken. We will use forward reads only:
 
