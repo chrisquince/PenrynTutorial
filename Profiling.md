@@ -190,7 +190,6 @@ done
 Then when we are done we merge these tables:
 ```
 python ~/Installation/metaphlan2/utils/merge_metaphlan_tables.py MetaphlanResults/*_pm.txt > MetaphlanResults/merged_abundance_table.txt
-python ~/Installation/metaphlan2/merge_metaphlan_tables.py MetaphlanResults/*_pm.txt > MetaphlanMerged/merged_abundance_table.txt
 ```
 
 and select species:
