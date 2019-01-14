@@ -26,14 +26,6 @@ Penryn8: 137.205.69.34
 
 Penryn9: 137.205.69.68
 
-Penryn10: 137.205.69.109
-
-Penryn11: 137.205.69.124
-
-Penryn12: 137.205.69.84
-
-Penryn13: 137.205.69.116
-
 Penryn14: 137.205.69.110
 
 Penryn15: 137.205.69.142
@@ -45,14 +37,6 @@ Penryn17: 137.205.69.42
 Penryn18: 137.205.69.131
 
 Penryn19: 137.205.69.144
-
-Penryn20: 137.205.69.62
-
-Penryn21: 137.205.69.20
-
-Penryn22: 137.205.69.160
-
-Penryn24: 137.205.69.164
 
 ```
 
@@ -90,8 +74,9 @@ for file in ReadsSub/*R1*fastq
 do
     base=${file##*/}
     stub=${base%_R1.fastq}
+    stub2=${file%_R1.fastq}
     echo $stub
-    kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output Kraken/${stub}_R1.kraken $file
+    kraken --db ~/Databases/minikraken_20141208/ --threads 8 --preload --output Kraken/${stub}.kraken $file ${stub2}_R2.fastq
 done
 ```
 
@@ -99,54 +84,36 @@ Try to understand the anatomy of the above commands.
 
 We match against the 'minikraken' database which corresponds to RefSeq 2014.
 
-Would we expect the profile to differ between R1 and R2?
-
-Can you edit the above to run the R2 reads?
+What are R1 and R2 reads?
 
 Look at percentage of reads classified. Infant guts are well studied communities.
-
 
 The output is just a text file:
 
 ```
-head Kraken/sample1_R1.kraken
+head Kraken/sample1.kraken
 ```
 
 And we can generate a report:
 
 ```
-kraken-report --db ~/Databases/minikraken_20141208/  Kraken/sample1_R1.kraken >  Kraken/sample1_R1.kraken.report
+kraken-report --db ~/Databases/minikraken_20141208/  Kraken/sample1.kraken >  Kraken/sample1.kraken.report
 ```
 
 We can get a report of the predicted genera:
 ```
-cat  Kraken/sample1_R1.kraken.report | awk '$4=="G"'
+cat  Kraken/sample1.kraken.report | awk '$4=="G"'
 ```
 
 How would we get the species classifications, can you edit the above to do that?
 
 Some people prefer a different format:
 ```
-kraken-mpa-report --db ~/Databases/minikraken_20141208/ Kraken/sample1_R1.kraken  > Kraken/sample1_R1.kraken.mpa.report
+kraken-mpa-report --db ~/Databases/minikraken_20141208/ Kraken/sample1.kraken  > Kraken/sample1.kraken.mpareport
 ```
-
-Compare with reverse reads what is the major difference?
-
-Will combine the two for analysis below.
-
-```
-for file in Kraken/*R1.kraken
-do
-    stub=${file%_R1.kraken}
-    rfile=${stub}_R2.kraken
-    cat $file $rfile > ${stub}_R12.kraken
-done
-```
-
-
 Now lets get reports on all combined samples:
 ```
-for file in Kraken/*_R12.kraken
+for file in Kraken/*.kraken
 do
     stub=${file%.kraken}
     echo $stub
@@ -157,9 +124,10 @@ done
 Having done this we want to get one table of annotations at the genera level for community comparisons:
 
 ```
-for file in Kraken/*_R12.kraken.report
+for file in Kraken/*.kraken.report
 do
-    stub=${file%_R12.kraken.report}
+    echo $file
+    stub=${file%.kraken.report}
     cat  $file | awk '$4=="G"' > $stub.genera
 done
 ```
